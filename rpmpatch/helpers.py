@@ -22,13 +22,14 @@ if os.path.exists(os.path.join(PARENT, 'rpmpatch')):
 from rpmpatch.SourcePackage import SourcePackage
 from rpmpatch.SpecFile import SpecFile
 
-def rpmpatch(configdir, srpm, changelog_user, verbose=False):
+def rpmpatch(configdir, srpm, changelog_user, verbose=False, keep_dist=False):
     '''
         Read the config, perform the steps, build the package
     '''
     package = SourcePackage(srpm)
     name = package.packageName()
     version = package.packageVersion()
+    release = package.packageRelease()
     cfgfilename = configdir + '/' + name + '.ini'
     if not os.path.isfile(cfgfilename):
         otherspot = configdir + '/' + name + '/' + name + '.ini'
@@ -197,9 +198,68 @@ def rpmpatch(configdir, srpm, changelog_user, verbose=False):
     for thing in cfg_file['define']:
         defines_dict[thing[0]] = thing[1]
 
+    if keep_dist:
+        dist = __guess_srpm_dist(release)
+        defines_dict['%dist'] = '.{dist}'.format(dist=dist)
+
     built = specfile.build(defines_dict, cfg_file['program']['compile'],
                            cfg_file['program']['build_targets'])
     return built
+
+
+def __guess_srpm_dist(release):
+    """
+    the dist tag must be extracted from the release. The problem is that it might look like this:
+    - %release.%dist
+    - %release.%dist.%subrelease
+    - %dist.%release
+    so the easiest thing is going through release, mark the index of first
+    not numerical and not dot character then find next dot or end of the
+    string.
+    This method still won't work if %release is something like:
+    git_123123123.el8_6. So it's not very clever
+    There is a separate way to find distag for modular package that is based on
+    the `module+` string.
+    """
+    if 'module+' not in release:
+        # using set to make it a little bit faster than array
+        skip_chars = set(['.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+        dist_first_char = -1
+        dist_last_char = -1
+        index = 0
+        while index < len(release):
+            # stop counting after dot (skip_chars changed inside loop) when
+            # dist_first_char is assigned
+            if dist_first_char > 0 and release[index] in skip_chars:
+                break
+
+            if release[index] not in skip_chars:
+                skip_chars = set('.')  # this is stupid
+                if dist_first_char < 0:
+                    dist_first_char = index
+                    dist_last_char = index
+                else:
+                    dist_last_char += 1
+
+            index += 1
+        dist = release[dist_first_char:dist_last_char+1]
+        print "Found dist {dist} - keeping it".format(dist=dist)
+    else:  # f*** modularity, silent majority, raised by system(d) - builderwise
+        disttag_index = release.find('module+')
+        if disttag_index >= 0:
+            src_rpm_disttag = release[disttag_index:]
+            # WELL no so fast! Sometimes there are packages that have modular
+            # disttag and also additional release number! That's why we also
+            # check if there is nothing after "extra"(additional release) dot
+            last_dot_index = src_rpm_disttag.rfind('.')
+            src_rpm_orig_length = len(src_rpm_disttag)
+            # Number 5 is arbitrary but worked for all EuroLinux 8 builds
+            if src_rpm_orig_length - 5 < last_dot_index:
+                dist = src_rpm_disttag[:last_dot_index]
+            else:
+                dist = src_rpm_disttag
+    return dist
+
 
 def find_dist_tag(config, srpm, specfile):
     '''
@@ -342,13 +402,13 @@ def sources(config, section, version, specfile):
     else:
         raise RuntimeError('Bad ' + section + ' in config file')
 
-def parsesrpms(configdir, srpms, changelog_user, verbose=False):
+def parsesrpms(configdir, srpms, changelog_user, verbose=False, keep_dist=False):
     '''
         Loop through the rpms, possible use of threading here later
     '''
     result = []
     for srpm in srpms:
-        result.append(rpmpatch(configdir, srpm, changelog_user, verbose))
+        result.append(rpmpatch(configdir, srpm, changelog_user, verbose, keep_dist))
 
     for item in result:
         for element in item:

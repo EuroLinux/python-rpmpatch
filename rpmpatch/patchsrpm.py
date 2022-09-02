@@ -189,6 +189,18 @@ on_version = [ '1.2' ]
 # you must have a changelog entry
 changelog = Not this thingy
 
+[source3]
+# example for replacing a source
+method = replace
+
+# your sources
+source = distro.ini
+
+# spec file sources
+specsourcename = distribution.ini
+
+changelog = Replace distribuiton.ini with distro.ini
+
 # ----------------------------------------------------
 # The 'spec' sections are for applying patches to the specfile itself
 # when you've added a new source or want to remove a source file
@@ -252,6 +264,8 @@ changelog = I changed everything to L for some reason
 
     PARSER.add_option('--verbose', default=False, action='store_true',
                       help='''Print action information''')
+    PARSER.add_option('--keep_dist', default=False, action='store_true',
+                      help='''keep dist like el7_9 or el9_0. Might not work!''')
 
     (OPTIONS, ARGS) = PARSER.parse_args()
 
@@ -272,5 +286,4 @@ changelog = I changed everything to L for some reason
         if not os.path.isfile(THEFILE):
             raise IOError('No such file: ' + THEFILE)
 
-    parsesrpms(os.path.expanduser(OPTIONS.configdir), ARGS, OPTIONS.changelog_user, OPTIONS.verbose)
-
+    parsesrpms(os.path.expanduser(OPTIONS.configdir), ARGS, OPTIONS.changelog_user, OPTIONS.verbose, OPTIONS.keep_dist)
