@@ -10,12 +10,31 @@ also provides instructions on how to build a configuration file to begin
 working with this toolset right away.
 
 
+## Python RPM Autopatch for Enterprise Linux/EuroLinux 6 or 7
+
+The older version that requires and uses python2 is saved and developed
+on the `python2` branch, to use that version you can clone with the `-b python2`
+option, for example:
+
+```bash
+git clone git@github.com:EuroLinux/python-rpmpatch.git -b python2
+```
+
+or checkout the branch inside the repo directory
+
+```bash
+cd python-rpmpatch
+git checkout python2
+```
+
 ## Setup
 Firstly install rpm-build and development packages
 
 ```
 sudo yum install -y rpm-build @development
 ```
+
+**Note: step below is optional**.
 
 We strongly recommend using a virtual environment. Because rpm is system
 dependent python package, we introduced, a simple `create_and_fix_venv.sh`
@@ -27,7 +46,6 @@ sudo dnf install -y python3-virtualenv
 ./create_and_fix_venv.sh
 ```
 
-**Note: this step is optional**.
 
 ## Usage
 
