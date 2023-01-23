@@ -57,3 +57,19 @@ setup_file(){
     [ -e "$HOME/rpmbuild/SRPMS/$SRPM_NAME" ]
 
 }
+
+@test "Build rpm with patch, without autosetup but disabled explicite disabled patch marcro" {
+    SRPM_NAME=libreoffice-6.4.7.2-12.el8_7.src.rpm
+    rpmdev-wipetree
+    run ./rpmpatch/patchsrpm.py --changelog_user='test user <test@example.com>' --keep_dist --config=$BATS_TEST_DIRNAME/test-resources/test-config/ $BATS_TEST_DIRNAME/test-resources/srpms/$SRPM_NAME
+    SRPM="$HOME/rpmbuild/SRPMS/$SRPM_NAME"
+    [ -e "$HOME/rpmbuild/SRPMS/$SRPM_NAME" ]
+    mv "$HOME/rpmbuild/SRPMS/$SRPM_NAME" /tmp
+    rpmdev-wipetree
+    rpm -ivh "/tmp/$SRPM_NAME"
+    grep 'Patch1000.*eurolinux.patch' $HOME/rpmbuild/SPECS/libreoffice.spec
+    if fgrep '%patch1000' $HOME/rpmbuild/SPECS/libreoffice.spec; then
+        echo "FAIL %patch1000 macro found in the specfile..."
+        false
+    fi
+}

@@ -1,0 +1,59 @@
+From c6b9f7266dec834abd07008404fbbc0477017b13 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Tomasz=20Podsiad=C5=82y?= <tp@euro-linux.com>
+Date: Wed, 6 Apr 2022 12:37:50 +0000
+Subject: [PATCH] eurolinux
+
+---
+ README.md                            | 2 +-
+ extras/source/wordbook/technical.dic | 8 ++++++++
+ svtools/source/misc/langhelp.cxx     | 2 +-
+ 3 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/README.md b/README.md
+index d7e942d9c3..150a5a0cd2 100644
+--- a/README.md
++++ b/README.md
+@@ -40,7 +40,7 @@ run and compile LibreOffice, also used by the TDF builds:
+     * Build: 10.13.2 + Xcode 9.3
+       Build: 10.14.x (Mojave) + Xcode 11.x for TDF builds (tdf#122218)
+ * Linux:
+-    * Runtime: RHEL 7 or CentOS 7
++    * Runtime: EuroLinux 7, RHEL 7 or CentOS 7
+     * Build: either GCC 7.0.0; or Clang 5.0.2 with libstdc++ 7.3.0
+ * iOS (only for LibreOfficeKit):
+     * Runtime: 11.4 (only support for newer i devices == 64 bit)
+diff --git a/extras/source/wordbook/technical.dic b/extras/source/wordbook/technical.dic
+index f2af65fad3..51ddfead0e 100644
+--- a/extras/source/wordbook/technical.dic
++++ b/extras/source/wordbook/technical.dic
+@@ -80,6 +80,14 @@ eGuide
+ Electronics
+ Etch
+ Ethernet
++EuroAP=
++EuroDB=
++EuroIQ=
++EuroLinux=
++EuroMan=
++EuroSSO=
++EuroStorage=
++EuroTower=
+ Evolution
+ Exadata=
+ Facebook
+diff --git a/svtools/source/misc/langhelp.cxx b/svtools/source/misc/langhelp.cxx
+index 6ef47539f5..d4b0766ecf 100644
+--- a/svtools/source/misc/langhelp.cxx
++++ b/svtools/source/misc/langhelp.cxx
+@@ -127,7 +127,7 @@ OUString getInstalledLocaleForSystemUILanguage(const css::uno::Sequence<OUString
+             if (!install.isEmpty() && install != "en-US")
+             {
+                 std::string_view sVendor(OOO_VENDOR);
+-                if (sVendor == "Red Hat, Inc." || sVendor == "The Fedora Project")
++                if (sVendor == "Red Hat, Inc." || sVendor == "The Fedora Project" || sVendor == "EuroLinux")
+                 {
+                     // langpack is the typical Fedora/RHEL naming convention
+                     LanguageType eType = aWantedTag.getLanguageType();
+-- 
+2.27.0
+
