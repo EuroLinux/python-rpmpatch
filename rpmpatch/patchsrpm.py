@@ -152,6 +152,20 @@ changelog = I'm removing this patch because it causes problem
 # Removing sources requires more complex work (like a patch)
 # You probably still need a patch to do something with your newly added source
 # They are processed in numeric order
+[patch3]
+# example for adding a patch but WITHOUT '%patch' in specfile
+# this is useful when autopatch is not detected or when there are
+# some other hacks like using patches with direct git invoking in setup,
+# etc.
+method = add
+
+# DO NOT PUT THESE IN rpmbuild/SOURCES they will be copied in there for you
+patch = /path/to/patch
+
+skip_patch_macro = True
+# you must have a changelog entry
+changelog = I'm adding this patch to resolve issue and fix bug
+
 [source1]
 # example for adding a source
 method = add

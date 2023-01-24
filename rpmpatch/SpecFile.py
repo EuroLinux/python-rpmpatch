@@ -215,7 +215,7 @@ class SpecFile(object):
 
         return True
 
-    def add_patch(self, patchfile, patchstripe, patchnum, changelog):
+    def add_patch(self, patchfile, patchstripe, patchnum, changelog, skip_patch_macro=False):
         '''
             This will add a given patch into the rpm package.  You must
             specify the patch stripe (the 1 from -p1).
@@ -283,6 +283,9 @@ class SpecFile(object):
         setup_re = '(%autopatch.*)'
         matches = re.findall(setup_re, not_changelog)
         if matches:
+            patch_entry = None
+        # patch explicit marked to skip in the ini file
+        if skip_patch_macro:
             patch_entry = None
 
         if patch_entry:

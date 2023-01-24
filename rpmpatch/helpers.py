@@ -350,7 +350,16 @@ def patches(config, section, version, specfile):
             num = config['num']
         else:
             num = None
-        return specfile.add_patch(name, stripe, num, changelog)
+        if 'skip_patch_macro' in config:
+            if config['skip_patch_macro'] == 'True' or config['skip_patch_macro'] == 'true':
+                skip_patch_macro = True
+            elif config['skip_patch_macro'] == 'False' or config['skip_patch_macro'] == 'false':
+                skip_patch_macro = False
+            else:
+                raise(ValueError(f"skip_patch_macro must be one of the following: True, true, False, false"))
+        else:
+            skip_patch_macro = False
+        return specfile.add_patch(name, stripe, num, changelog, skip_patch_macro)
 
     if method.lower() == 'del':
         if 'num' in config:
