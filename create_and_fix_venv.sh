@@ -3,7 +3,7 @@
 
 virtualenv -p /usr/bin/python3 venv
 . venv/bin/activate
-pip install -r ./requirements.txt
+# pip install -r ./requirements.txt
 #
 # This sucks - we have to manually copy rpm package :/ to venv
 #
